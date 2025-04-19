@@ -7,8 +7,14 @@
   "scripts": {
     "start": "node server/server.js",
     "seed": "node database/seed.js"
-  },  "dependencies": {
+  },
+  "dependencies": {
     "express": "^5.1.0",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "eslint": "^9.25.0",
+    "globals": "^16.0.0"
   }
 }

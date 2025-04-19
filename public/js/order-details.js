@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     const urlParams = new URLSearchParams(window.location.search);
     const orderNumber = urlParams.get('orderNumber');
-    console.log('Order number:', orderNumber);
     
     if (orderNumber) {
         const response = await fetch(`/api/orders/${orderNumber}`);
