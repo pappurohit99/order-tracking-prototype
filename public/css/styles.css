@@ -70,3 +70,23 @@ main {
 #notification-settings label {
     margin-bottom: 0.5rem;
 }
+/* Add these to your existing styles.css */
+.modification-section {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+.modification-section h4 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
