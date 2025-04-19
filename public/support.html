@@ -6,75 +6,8 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-    <header class="navbar navbar-expand-lg navbar-light bg-light p-3">
-        <h1 class="navbar-brand mb-0">Order Support</h1>
-        <div class="ms-auto">
-            <div class="user-profile d-flex align-items-center">
-                <span class="me-2">John Doe</span>
-                <img src="/images/avatar.png" class="rounded-circle" width="40" height="40">
-            </div>
-        </div>
-    </header>
-
     <div class="container mt-4">
-        <div class="card">
-            <div class="card-header">
-                <h3>Support Options</h3>
-            </div>
-            <div class="card-body">
-                <!-- Live Chat Section -->
-                <div class="support-section mb-4">
-                    <h4>Live Chat</h4>
-                    <p>Connect with our support team instantly</p>
-                    <button class="btn btn-primary" id="startChatBtn">Start Chat</button>
-                </div>
-
-                <!-- Support Ticket Section -->
-                <div class="support-section mb-4">
-                    <h4>Create Support Ticket</h4>
-                    <form id="supportForm">
-                        <div class="mb-3">
-                            <label class="form-label">Issue Type</label>
-                            <select class="form-select">
-                                <option>Delivery Delay</option>
-                                <option>Package Damage</option>
-                                <option>Wrong Item Received</option>
-                                <option>Other</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-control" rows="4"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit Ticket</button>
-                    </form>
-                </div>
-
-                <!-- FAQ Section -->
-                <div class="support-section">
-                    <h4>Frequently Asked Questions</h4>
-                    <div class="accordion" id="faqAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                                    How can I track my order?
-                                </button>
-                            </h2>
-                            <div id="faq1" class="accordion-collapse collapse show">
-                                <div class="accordion-body">
-                                    You can track your order using the Order Status button on the dashboard.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="mt-3">
-            <button class="btn btn-secondary" onclick="window.location.href='/'">Back to Dashboard</button>
-        </div>
-    </div>
-
-    <script src="/js/support.js"></script>
+        <div id="supportContainer"></div>
+    </div>    <script src="/js/support.js"></script>
 </body>
 </html>

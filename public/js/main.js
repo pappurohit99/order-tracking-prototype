@@ -1,8 +1,18 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Button handlers
-    document.getElementById('orderStatusBtn').addEventListener('click', async function () {
+document.addEventListener('DOMContentLoaded', function() {
+    fetchOrderStats();
+
+    // Unified modal function for all operations
+    async function showOrderSelectionModal(action, targetPage) {
         const response = await fetch('/api/orders');
         const orders = await response.json();
+        
+        const modalTitle = {
+            'status': 'View Order Status',
+            'modify': 'Modify Order',
+            'reschedule': 'Reschedule Order',
+            'cancel': 'Cancel Order',
+            'support': 'Get Support for Order'
+        };
 
         const orderList = document.createElement('div');
         orderList.className = 'order-selection-modal';
@@ -11,15 +21,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Select an Order</h5>
+                            <h5 class="modal-title">${modalTitle[action]}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
                             ${orders.map(order => `
                                 <div class="order-item mb-2">
-                                    <a href="/order-details.html?orderNumber=${order.order_number}" 
+                                    <a href="/${targetPage}.html?orderNumber=${order.order_number}" 
                                        class="btn btn-outline-primary w-100">
                                         Order #${order.order_number} - ${order.customer_name}
+                                        <small class="d-block">${order.status}</small>
                                     </a>
                                 </div>
                             `).join('')}
@@ -29,45 +40,36 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <div class="modal-backdrop fade show"></div>
         `;
-
+        
         document.body.appendChild(orderList);
-
-        // Close handlers
-        const modal = orderList.querySelector('.modal');
-        const closeBtn = modal.querySelector('.btn-close');
-
+        
         function closeModal() {
             document.body.removeChild(orderList);
         }
 
-        closeBtn.addEventListener('click', closeModal);
-        orderList.addEventListener('click', function (e) {
-            if (e.target === orderList.querySelector('.modal') || e.target === orderList.querySelector('.modal-backdrop')) {
+        orderList.querySelector('.btn-close').addEventListener('click', closeModal);
+        orderList.addEventListener('click', function(e) {
+            if (e.target.matches('.modal, .modal-backdrop')) {
                 closeModal();
             }
         });
-    });
+    }
 
-    document.getElementById('orderModificationBtn').addEventListener('click', function () {
-        window.location.href = '/order-modification.html';
-    });
+    // Unified button handlers
+    const operations = {
+        'orderStatusBtn': ['status', 'order-details'],
+        'orderModificationBtn': ['modify', 'order-modification'],
+        'rescheduleBtn': ['reschedule', 'reschedule'],
+        'cancelBtn': ['cancel', 'cancel'],
+        'supportBtn': ['support', 'support']
+    };
 
-    document.getElementById('supportBtn').addEventListener('click', function () {
-        window.location.href = '/support.html';
+    Object.entries(operations).forEach(([btnId, [action, page]]) => {
+        document.getElementById(btnId).addEventListener('click', () => 
+            showOrderSelectionModal(action, page)
+        );
     });
-
-    document.getElementById('rescheduleBtn').addEventListener('click', function () {
-        window.location.href = '/reschedule.html';
-    });
-
-    document.getElementById('cancelBtn').addEventListener('click', function () {
-        window.location.href = '/cancel.html';
-    });
-
-    // Fetch and display orders
-    fetchOrderStats();
 });
-
 async function fetchOrderStats() {
     try {
         const response = await fetch('/api/orders');
