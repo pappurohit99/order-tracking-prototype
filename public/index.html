@@ -1,51 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Tracking</title>
+    <title>Order Tracking Dashboard</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <style>
-        #mapid { 
-            height: 500px; 
-            width: 100%; 
-        }
-    </style>
 </head>
-
 <body>
-    <header>
-        <h1>Order Tracking</h1>
+    <header class="navbar navbar-expand-lg navbar-light bg-light p-3">
+        <h1 class="navbar-brand mb-0">Order Tracking Dashboard</h1>
+        <div class="ms-auto">
+            <div class="user-profile d-flex align-items-center">
+                <span class="me-2">John Doe</span>
+                <img src="/images/avatar.png" class="rounded-circle" width="40" height="40">
+            </div>
+        </div>
     </header>
-    <main>
-        <section id="order-details">
-            <h2>Order Details</h2>
-            <div id="order-info">
-                <!-- Order information will be dynamically inserted here -->
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main Action Buttons -->
+            <div class="col-md-9">
+                <div class="btn-group mt-3" role="group">
+                    <button class="btn btn-primary" id="orderStatusBtn">Order Status</button>
+                    <button class="btn btn-primary">Order Modification</button>
+                    <button class="btn btn-primary">Support</button>
+                </div>
             </div>
-        </section>
-        <section id="map">
-            <h2>Order Location</h2>
-            <div id="mapid"></div>
-        </section>
-        <section id="notifications">
-            <h2>Notifications</h2>
-            <div id="notification-settings">
-                <label>
-                    <input type="checkbox" id="real-time-updates" checked>
-                    Real-time Updates
-                </label>
-                <label>
-                    <input type="checkbox" id="sms-notifications">
-                    SMS Notifications
-                </label>
+
+            <!-- Vertical Action Buttons -->
+            <div class="col-md-3">
+                <div class="d-grid gap-3 mt-3">
+                    <button class="btn btn-warning btn-lg">Reschedule Order</button>
+                    <button class="btn btn-danger btn-lg">Cancel Order</button>
+                </div>
             </div>
-        </section>
-    </main>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        </div>
+
+        <!-- Order Insights Section -->
+        <div class="row mt-4">
+            <h2>Order Insights</h2>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Orders Shipped</h5>
+                        <h2 class="card-text">156</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Orders Delivered</h5>
+                        <h2 class="card-text">142</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">In Transit</h5>
+                        <h2 class="card-text">14</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Average Delivery Time</h5>
+                        <h2 class="card-text">2.3 days</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/js/main.js"></script>
 </body>
-
 </html>
