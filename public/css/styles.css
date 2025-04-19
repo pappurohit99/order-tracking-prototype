@@ -17,11 +17,21 @@ main {
 }
 
 #order-details,
-#map {
+#map,
+#notifications {
     margin-bottom: 2rem;
 }
 
 #mapid {
     height: 400px;
     width: 100%;
+}
+
+#notification-settings {
+    display: flex;
+    flex-direction: column;
+}
+
+#notification-settings label {
+    margin-bottom: 0.5rem;
 }

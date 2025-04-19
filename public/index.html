@@ -6,7 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Tracking</title>
     <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <style>
+        #mapid { 
+            height: 500px; 
+            width: 100%; 
+        }
+    </style>
 </head>
 
 <body>
@@ -24,9 +30,22 @@
             <h2>Order Location</h2>
             <div id="mapid"></div>
         </section>
+        <section id="notifications">
+            <h2>Notifications</h2>
+            <div id="notification-settings">
+                <label>
+                    <input type="checkbox" id="real-time-updates" checked>
+                    Real-time Updates
+                </label>
+                <label>
+                    <input type="checkbox" id="sms-notifications">
+                    SMS Notifications
+                </label>
+            </div>
+        </section>
     </main>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="/js/script.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 
 </html>
