@@ -5,9 +5,10 @@
   "author": "Rohit Pappu",
   "main": "server/server.js",
   "scripts": {
-    "start": "node server/server.js"
-  },
-  "dependencies": {
-    "express": "^5.1.0"
+    "start": "node server/server.js",
+    "seed": "node database/seed.js"
+  },  "dependencies": {
+    "express": "^5.1.0",
+    "sqlite3": "^5.1.7"
   }
 }

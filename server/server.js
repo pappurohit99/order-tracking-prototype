@@ -1,38 +1,49 @@
 const express = require('express');
+const path = require('path');
+const db = require('./database');
+
 const app = express();
 const port = 3000;
 
-app.use(express.static('public'));
+// API routes first
 app.use(express.json());
 
-let orderDetails = {
-    id: '12345',
-    status: 'In Transit',
-    estimatedDelivery: '2025-04-20',
-    location: {
-        lat: 37.7749,
-        lng: -122.4194
-    },
-    notifications: {
-        realTimeUpdates: true,
-        smsNotifications: false
-    }
-};
-
-app.get('/api/order', (req, res) => {
-    res.json(orderDetails);
+// Get all orders
+app.get('/api/orders', (req, res) => {
+    db.all('SELECT * FROM orders', [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
 });
 
-app.post('/api/notifications', (req, res) => {
-    const { realTimeUpdates, smsNotifications } = req.body;
-    if (realTimeUpdates !== undefined) {
-        orderDetails.notifications.realTimeUpdates = realTimeUpdates;
-    }
-    if (smsNotifications !== undefined) {
-        orderDetails.notifications.smsNotifications = smsNotifications;
-    }
-    res.json({ success: true });
+// Get single order by order_number
+app.get('/api/orders/:orderNumber', (req, res) => {
+    const orderNumber = req.params.orderNumber;
+    console.log('Attempting to fetch order:', orderNumber);
+    
+    const query = 'SELECT * FROM orders WHERE order_number = ?';
+    console.log('Executing query:', query, 'with parameter:', orderNumber);
+    
+    db.get(query, [orderNumber], (err, order) => {
+        if (err) {
+            console.log('Database error:', err);
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (!order) {
+            console.log('No order found for:', orderNumber);
+            res.status(404).json({ error: 'Order not found' });
+            return;
+        }
+        console.log('Found order:', order);
+        res.json(order);
+    });
 });
+// Static files after API routes
+app.use(express.static('public'));
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
