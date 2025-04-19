@@ -1,0 +1,13 @@
+{
+  "name": "order-tracking-prototype",
+  "version": "1.0.0",
+  "description": "High fidelity prototype for order tracking page",
+  "author": "Rohit Pappu",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
