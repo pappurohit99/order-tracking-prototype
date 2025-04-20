@@ -1,39 +1,35 @@
-document.addEventListener('DOMContentLoaded', async function() {
-    const orderNumber = new URLSearchParams(window.location.search).get('orderNumber');
-    const order = await fetchOrder(orderNumber);
-    renderSupportForm(order);
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderNumber = urlParams.get('orderNumber');
 
-    // Live Chat Handler
-    document.getElementById('startChatBtn').addEventListener('click', () => {
-        alert('Live chat feature coming soon!');
-    });
-
-    // Support Ticket Handler
     document.getElementById('supportForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        const ticketData = {
-            issueType: formData.get('issueType'),
-            description: formData.get('description')
-        };
         
+        const ticketId = Math.floor(Math.random() * 1000000);
+        
+        const formData = {
+            issueType: document.getElementById('issueType').value,
+            description: document.getElementById('description').value
+        };
+
         try {
             const response = await fetch(`/api/orders/${orderNumber}/support`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(ticketData)
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
             });
-            
+
             if (response.ok) {
-                alert('Support ticket created successfully');
+                alert(`Support ticket created successfully!\nTicket ID: ${ticketId}`);
                 window.location.href = '/';
             }
         } catch (error) {
             console.error('Error creating support ticket:', error);
         }
-    });});
-
-async function fetchOrder(orderNumber) {
+    });
+});async function fetchOrder(orderNumber) {
     const response = await fetch(`/api/orders/${orderNumber}`);
     return response.json();
 }
