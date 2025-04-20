@@ -16,32 +16,25 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 function displayOrderDetails(order) {
-    const detailsContainer = document.createElement('div');
-    detailsContainer.className = 'order-details-container';
-    detailsContainer.innerHTML = `
-        <h2>Order #${order.order_number}</h2>
-        <div class="status-badge ${order.status.toLowerCase()}">${order.status}</div>
-        <div class="delivery-details">
-            <p><strong>Delivery Address:</strong> ${order.delivery_address}</p>
-            <p><strong>Customer:</strong> ${order.customer_name}</p>
-            <p><strong>Estimated Delivery:</strong> ${new Date(order.estimated_delivery).toLocaleDateString()}</p>
-            <p><strong>Total Amount:</strong> ${order.total_amount}</p>
-        </div>
-        <div class="tracking-history">
-            <h3>Tracking History</h3>
-            <ul class="list-group">
-                ${JSON.parse(order.location_history).map(location => `
-                    <li class="list-group-item">
-                        ${location.status} - ${new Date(location.timestamp).toLocaleString()}
-                    </li>
-                `).join('')}
-            </ul>
-        </div>
-    `;
+    // Add null checks before accessing properties
+    const status = order.status || 'N/A';
+    const customerName = order.customer_name || 'N/A';
+    const deliveryAddress = order.delivery_address || 'N/A';
+    const estimatedDelivery = order.estimated_delivery || 'N/A';
 
-    const mapElement = document.getElementById('map');
-    mapElement.parentNode.insertBefore(detailsContainer, mapElement);
-}function initializeMap(order) {
+    document.getElementById('orderStatus').textContent = status;
+    document.getElementById('customerName').textContent = customerName;
+    document.getElementById('deliveryAddress').textContent = deliveryAddress;
+    document.getElementById('estimatedDelivery').textContent = estimatedDelivery;
+
+    // Handle location history with null check
+    if (order.location_history) {
+        const locationHistory = JSON.parse(order.location_history);
+        displayLocationHistory(locationHistory);
+    }
+}
+
+function initializeMap(order) {
     const [lat, lng] = order.current_location.split(',');
     
     map = L.map('map').setView([lat, lng], 13);

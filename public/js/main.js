@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Unified modal function for all operations
     async function showOrderSelectionModal(action, targetPage) {
-        const response = await fetch('/api/orders');
+        const response = await fetch(`/api/orders?action=${action}`);
         const orders = await response.json();
         
         const modalTitle = {
@@ -54,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
     // Unified button handlers
     const operations = {
         'orderStatusBtn': ['status', 'order-details'],
@@ -134,4 +133,33 @@ function updateDashboardStats(stats, avgDeliveryTime) {
     cards[1].textContent = stats.delivered;
     cards[2].textContent = stats.total;
     cards[3].textContent = `${avgDeliveryTime} days`;
+}
+
+async function cancelOrder(orderNumber) {
+    const response = await fetch(`/api/orders/${orderNumber}/cancel`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    const result = await response.json();
+    if (result.message) {
+        // Refresh the order list to show updated status
+        fetchOrderStats();
+    }
+}
+
+async function modifyOrder(orderNumber, modifiedData) {
+    const response = await fetch(`/api/orders/${orderNumber}/modify`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(modifiedData)
+    });
+    const result = await response.json();
+    if (result.message) {
+        // Refresh the order list to show updated details
+        fetchOrderStats();
+    }
 }

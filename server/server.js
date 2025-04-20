@@ -9,7 +9,14 @@ app.use(express.json());
 
 // Get all orders
 app.get('/api/orders', (req, res) => {
-    db.all('SELECT * FROM orders', [], (err, rows) => {
+    const { action } = req.query;
+    let sql = 'SELECT * FROM orders';
+    
+    if (action === 'cancel' || action === 'reschedule') {
+        sql = "SELECT * FROM orders WHERE status != 'Delivered'";
+    }
+    
+    db.all(sql, [], (err, rows) => {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
@@ -17,7 +24,6 @@ app.get('/api/orders', (req, res) => {
         res.json(rows);
     });
 });
-
 // Get single order by order_number
 app.get('/api/orders/:orderNumber', (req, res) => {
     const orderNumber = req.params.orderNumber;
@@ -40,28 +46,55 @@ app.get('/api/orders/:orderNumber', (req, res) => {
 // Static files after API routes
 app.use(express.static('public'));
 
-// API Endpoints for all operations
+// Modify order endpoint (enhanced)
 app.put('/api/orders/:orderNumber/modify', (req, res) => {
     const { orderNumber } = req.params;
     const { delivery_address, estimated_delivery } = req.body;
 
+    // First get existing order data
+    db.get('SELECT * FROM orders WHERE order_number = ?', [orderNumber], (err, existingOrder) => {
+        if (err) return res.status(500).json({ error: err.message });
+        
+        // Use new values or keep existing ones
+        const updatedAddress = delivery_address || existingOrder.delivery_address;
+        const updatedDelivery = estimated_delivery || existingOrder.estimated_delivery;
+
+        // Update with preserved values
+        db.run(`UPDATE orders SET 
+            delivery_address = ?,
+            estimated_delivery = ?,
+            location_history = json_insert(location_history, '$[#]', json(?))
+            WHERE order_number = ?`,
+            [updatedAddress, updatedDelivery,
+                JSON.stringify({
+                    status: 'Order Modified',
+                    timestamp: new Date().toISOString(),
+                    location: null
+                }), orderNumber],
+            (updateErr) => {
+                if (updateErr) return res.status(500).json({ error: updateErr.message });
+                res.json({ message: 'Order modified successfully' });
+            });
+    });
+});
+// New cancel order endpoint
+app.put('/api/orders/:orderNumber/cancel', (req, res) => {
+    const { orderNumber } = req.params;
+
     db.run(`UPDATE orders SET 
-        delivery_address = ?,
-        estimated_delivery = ?,
+        status = 'Cancelled',
         location_history = json_insert(location_history, '$[#]', json(?))
         WHERE order_number = ?`,
-        [delivery_address, estimated_delivery,
-            JSON.stringify({
-                status: 'Order Modified',
-                timestamp: new Date().toISOString(),
-                location: null
-            }), orderNumber],
+        [JSON.stringify({
+            status: 'Order Cancelled',
+            timestamp: new Date().toISOString(),
+            location: null
+        }), orderNumber],
         (err) => {
             if (err) return res.status(500).json({ error: err.message });
-            res.json({ message: 'Order modified successfully' });
+            res.json({ message: 'Order cancelled successfully' });
         });
 });
-
 app.put('/api/orders/:orderNumber/reschedule', (req, res) => {
     const { orderNumber } = req.params;
     const { new_delivery_date } = req.body;
