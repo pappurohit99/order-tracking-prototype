@@ -1,12 +1,10 @@
-CREATE TABLE orders (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    order_number TEXT UNIQUE,
+CREATE TABLE IF NOT EXISTS orders (
+    order_number TEXT PRIMARY KEY,
     customer_name TEXT,
     delivery_address TEXT,
     status TEXT,
-    created_at DATETIME,
-    estimated_delivery DATETIME,
-    current_location TEXT,
-    total_amount DECIMAL(10,2),
-    items TEXT
-);
+    estimated_delivery TEXT,
+    created_at TEXT,
+    current_location TEXT DEFAULT '{"lat": 51.505, "lng": -0.09}',
+    location_history TEXT,
+    notification_preferences TEXT DEFAULT '{"sms":false,"email":false,"voice_assistant":false}');

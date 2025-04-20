@@ -2,10 +2,10 @@
 <html>
 
 <head>
-    <!-- Add Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">    <title>Order Details</title>
+    <title>Order Details</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <style>
         #map { height: 400px; }
     </style>
@@ -16,7 +16,7 @@
         <a href="/" class="btn btn-primary mb-3">Back to Dashboard</a>
         
         <div class="order-details">
-            <!-- Basic order info will be populated here -->
+            <!-- Order details will be populated here -->
         </div>
         
         <div class="row mt-4">
@@ -34,7 +34,35 @@
                 </div>
             </div>
         </div>
-    </div>    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-bell me-2"></i>Notification Preferences
+                </h5>
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" id="smsNotification">
+                    <label class="form-check-label" for="smsNotification">
+                        <i class="bi bi-phone me-2"></i>SMS Updates
+                    </label>
+                </div>
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" id="emailNotification">
+                    <label class="form-check-label" for="emailNotification">
+                        <i class="bi bi-envelope me-2"></i>Email Notifications
+                    </label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="voiceAssistant">
+                    <label class="form-check-label" for="voiceAssistant">
+                        <i class="bi bi-mic me-2"></i>Voice Assistant Integration
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="/js/order-details.js"></script>
 </body>
 
