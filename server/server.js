@@ -12,8 +12,8 @@ app.get('/api/orders', (req, res) => {
     const { action } = req.query;
     let sql = 'SELECT * FROM orders';
     
-    if (action === 'cancel' || action === 'reschedule') {
-        sql = "SELECT * FROM orders WHERE status != 'Delivered'";
+    if (action === 'cancel' || action === 'reschedule' || action === 'modify') {
+        sql = "SELECT * FROM orders WHERE status = 'In Transit'";
     }
     
     db.all(sql, [], (err, rows) => {
@@ -49,51 +49,34 @@ app.use(express.static('public'));
 // Modify order endpoint (enhanced)
 app.put('/api/orders/:orderNumber/modify', (req, res) => {
     const { orderNumber } = req.params;
-    const { delivery_address, estimated_delivery } = req.body;
+    const updates = req.body;
 
-    // First get existing order data
-    db.get('SELECT * FROM orders WHERE order_number = ?', [orderNumber], (err, existingOrder) => {
+    // Get current order data
+    db.get('SELECT * FROM orders WHERE order_number = ?', [orderNumber], (err, currentOrder) => {
         if (err) return res.status(500).json({ error: err.message });
-        
-        // Use new values or keep existing ones
-        const updatedAddress = delivery_address || existingOrder.delivery_address;
-        const updatedDelivery = estimated_delivery || existingOrder.estimated_delivery;
 
-        // Update with preserved values
+        // Preserve existing values if not in updates
+        const updatedData = {
+            delivery_address: updates.delivery_address || currentOrder.delivery_address,
+            estimated_delivery: updates.estimated_delivery || currentOrder.estimated_delivery
+        };
+
         db.run(`UPDATE orders SET 
             delivery_address = ?,
             estimated_delivery = ?,
             location_history = json_insert(location_history, '$[#]', json(?))
             WHERE order_number = ?`,
-            [updatedAddress, updatedDelivery,
+            [updatedData.delivery_address, updatedData.estimated_delivery,
                 JSON.stringify({
                     status: 'Order Modified',
                     timestamp: new Date().toISOString(),
-                    location: null
+                    changes: updates
                 }), orderNumber],
-            (updateErr) => {
-                if (updateErr) return res.status(500).json({ error: updateErr.message });
-                res.json({ message: 'Order modified successfully' });
+            (err) => {
+                if (err) return res.status(500).json({ error: err.message });
+                res.json({ message: 'Order modified successfully', order: updatedData });
             });
     });
-});
-// New cancel order endpoint
-app.put('/api/orders/:orderNumber/cancel', (req, res) => {
-    const { orderNumber } = req.params;
-
-    db.run(`UPDATE orders SET 
-        status = 'Cancelled',
-        location_history = json_insert(location_history, '$[#]', json(?))
-        WHERE order_number = ?`,
-        [JSON.stringify({
-            status: 'Order Cancelled',
-            timestamp: new Date().toISOString(),
-            location: null
-        }), orderNumber],
-        (err) => {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ message: 'Order cancelled successfully' });
-        });
 });
 app.put('/api/orders/:orderNumber/reschedule', (req, res) => {
     const { orderNumber } = req.params;
@@ -128,6 +111,23 @@ app.post('/api/orders/:orderNumber/support', (req, res) => {
             res.json({ message: 'Support ticket created successfully' });
         });
 });
+app.put('/api/orders/:orderNumber/cancel', (req, res) => {
+    const { orderNumber } = req.params;
+    
+    db.run(`UPDATE orders SET 
+        status = 'Cancelled',
+        location_history = json_insert(location_history, '$[#]', json(?))
+        WHERE order_number = ?`,
+        [JSON.stringify({
+            status: 'Cancelled',
+            timestamp: new Date().toISOString()
+        }), orderNumber],
+        (err) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ message: 'Order cancelled successfully' });
+        });
+});
+
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
