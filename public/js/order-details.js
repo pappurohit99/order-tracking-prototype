@@ -1,37 +1,54 @@
 let map;
 
 document.addEventListener('DOMContentLoaded', async function() {
-    // Log the full URL and parameters for verification
-    console.log('URL:', window.location.href);
-    console.log('Search params:', window.location.search);
-    
     const urlParams = new URLSearchParams(window.location.search);
     const orderNumber = urlParams.get('orderNumber');
-    
+
     if (orderNumber) {
         const response = await fetch(`/api/orders/${orderNumber}`);
         const order = await response.json();
         displayOrderDetails(order);
-        initializeMap(order);
     }
 });
+
 function displayOrderDetails(order) {
-    // Add null checks before accessing properties
-    const status = order.status || 'N/A';
-    const customerName = order.customer_name || 'N/A';
-    const deliveryAddress = order.delivery_address || 'N/A';
-    const estimatedDelivery = order.estimated_delivery || 'N/A';
+    const orderDetailsContainer = document.querySelector('.order-details');
+    
+    orderDetailsContainer.innerHTML = `
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Order Status</h5>
+                <p id="orderStatus" class="card-text">${order.status}</p>
+            </div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Customer Details</h5>
+                <p id="customerName" class="card-text">${order.customer_name}</p>
+            </div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Delivery Details</h5>
+                <p id="deliveryAddress" class="card-text">${order.delivery_address}</p>
+                <p id="estimatedDelivery" class="card-text">${order.estimated_delivery}</p>
+            </div>
+        </div>
+    `;
 
-    document.getElementById('orderStatus').textContent = status;
-    document.getElementById('customerName').textContent = customerName;
-    document.getElementById('deliveryAddress').textContent = deliveryAddress;
-    document.getElementById('estimatedDelivery').textContent = estimatedDelivery;
+    // Display location history
+    const locationHistory = JSON.parse(order.location_history || '[]');
+    const historyContainer = document.getElementById('locationHistory');
+    historyContainer.innerHTML = locationHistory.map(entry => `
+        <div class="alert alert-info">
+            <strong>${entry.status}</strong>
+            <p>${entry.timestamp}</p>
+            ${entry.location ? `<p>Location: ${entry.location}</p>` : ''}
+        </div>
+    `).join('');
 
-    // Handle location history with null check
-    if (order.location_history) {
-        const locationHistory = JSON.parse(order.location_history);
-        displayLocationHistory(locationHistory);
-    }
+    // Initialize map (assuming you have a map implementation)
+    initializeMap(order);
 }
 
 function initializeMap(order) {
