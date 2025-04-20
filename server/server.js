@@ -9,7 +9,14 @@ app.use(express.json());
 
 // Get all orders
 app.get('/api/orders', (req, res) => {
-    db.all('SELECT * FROM orders', [], (err, rows) => {
+    const { action } = req.query;
+    let sql = 'SELECT * FROM orders';
+    
+    if (action === 'cancel' || action === 'reschedule' || action === 'modify') {
+        sql = "SELECT * FROM orders WHERE status = 'In Transit'";
+    }
+    
+    db.all(sql, [], (err, rows) => {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
@@ -17,7 +24,6 @@ app.get('/api/orders', (req, res) => {
         res.json(rows);
     });
 });
-
 // Get single order by order_number
 app.get('/api/orders/:orderNumber', (req, res) => {
     const orderNumber = req.params.orderNumber;
@@ -43,25 +49,35 @@ app.use(express.static('public'));
 // API Endpoints for all operations
 app.put('/api/orders/:orderNumber/modify', (req, res) => {
     const { orderNumber } = req.params;
-    const { delivery_address, estimated_delivery } = req.body;
+    const updates = req.body;
 
-    db.run(`UPDATE orders SET 
-        delivery_address = ?,
-        estimated_delivery = ?,
-        location_history = json_insert(location_history, '$[#]', json(?))
-        WHERE order_number = ?`,
-        [delivery_address, estimated_delivery,
-            JSON.stringify({
-                status: 'Order Modified',
-                timestamp: new Date().toISOString(),
-                location: null
-            }), orderNumber],
-        (err) => {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ message: 'Order modified successfully' });
-        });
+    // Get current order data
+    db.get('SELECT * FROM orders WHERE order_number = ?', [orderNumber], (err, currentOrder) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        // Preserve existing values if not in updates
+        const updatedData = {
+            delivery_address: updates.delivery_address || currentOrder.delivery_address,
+            estimated_delivery: updates.estimated_delivery || currentOrder.estimated_delivery
+        };
+
+        db.run(`UPDATE orders SET 
+            delivery_address = ?,
+            estimated_delivery = ?,
+            location_history = json_insert(location_history, '$[#]', json(?))
+            WHERE order_number = ?`,
+            [updatedData.delivery_address, updatedData.estimated_delivery,
+                JSON.stringify({
+                    status: 'Order Modified',
+                    timestamp: new Date().toISOString(),
+                    changes: updates
+                }), orderNumber],
+            (err) => {
+                if (err) return res.status(500).json({ error: err.message });
+                res.json({ message: 'Order modified successfully', order: updatedData });
+            });
+    });
 });
-
 app.put('/api/orders/:orderNumber/reschedule', (req, res) => {
     const { orderNumber } = req.params;
     const { new_delivery_date } = req.body;
@@ -95,6 +111,23 @@ app.post('/api/orders/:orderNumber/support', (req, res) => {
             res.json({ message: 'Support ticket created successfully' });
         });
 });
+app.put('/api/orders/:orderNumber/cancel', (req, res) => {
+    const { orderNumber } = req.params;
+    
+    db.run(`UPDATE orders SET 
+        status = 'Cancelled',
+        location_history = json_insert(location_history, '$[#]', json(?))
+        WHERE order_number = ?`,
+        [JSON.stringify({
+            status: 'Cancelled',
+            timestamp: new Date().toISOString()
+        }), orderNumber],
+        (err) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ message: 'Order cancelled successfully' });
+        });
+});
+
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
