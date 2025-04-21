@@ -12,67 +12,48 @@ A modern order tracking system with real-time map visualization, order modificat
 ## Setup Instructions
 
 ### Windows
-1. Install Node.js from [nodejs.org](https://nodejs.org)
-2. Open Command Prompt and run:
-```bash
-npm install -g express
-```
+Install Node.js from [nodejs.org](https://nodejs.org)
 
 ### macOS
-1. Install Node.js using Homebrew:
+Install Node.js using Homebrew:
 ```bash
 brew install node
 ```
-2. Install Express:
-```bash
-npm install -g express
-```
 
 ### Linux (Ubuntu/Debian)
-1. Install Node.js:
+Install Node.js:
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 sudo apt-get install -y nodejs
-```
-2. Install Express:
-```bash
-npm install -g express
 ```
 
 ## Running the Project
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/order-tracking-dashboard
+git clone https://github.com/pappurohit99/order-tracking-prototype.git
 ```
 
 2. Navigate to project directory
 ```bash
-cd order-tracking-dashboard
+cd order-tracking-prototype
 ```
 
 3. Install dependencies
 ```bash
 npm install
 ```
+4. Prepare the database for a fresh session
+```bash
+npm run seed
+```
 
-4. Start the server
+5. Start the server
 ```bash
 npm start
 ```
-5. Open your browser and visit:
+6. Open your browser and visit:
 ```
 http://localhost:3000
-```
-
-## Project Structure
-```
-order-tracking-dashboard/
-├── public/
-│   ├── css/
-│   ├── js/
-│   └── images/
-├── server.js
-└── README.md
 ```
 
 ## Technologies Used
